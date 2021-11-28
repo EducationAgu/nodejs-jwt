@@ -1,9 +1,14 @@
 const sequelize = require('../connect/connect.js')
 const {DataTypes} = require('sequelize')
 
-const tokens = sequelize.define("post", {
-    jwtToken: {
-        type: DataTypes.TEXT,
+const tokens = sequelize.define("tokens", {
+    id: {
+        primaryKey: true,
+        type: DataTypes.BIGINT,
+        autoIncrement: true
+    },
+    userId: {
+        type: DataTypes.BIGINT,
         allowNull: false
     },
     refreshToken: {
@@ -11,7 +16,7 @@ const tokens = sequelize.define("post", {
         allowNull: false
     },
     expirationDate: {
-        type: DataTypes.TIME,
+        type: DataTypes.DATE,
         allowNull: false
     }
 })

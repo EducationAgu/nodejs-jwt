@@ -784,7 +784,7 @@ false YEKT
 false Z
 false Zulu
 </TimeZones>
-      <IntrospectionStateNumber>31976</IntrospectionStateNumber>
+      <IntrospectionStateNumber>32090</IntrospectionStateNumber>
       <StartupTime>1637997222</StartupTime>
     </root>
     <database id="2" parent="1" name="genapi">
@@ -809,11 +809,12 @@ false Zulu
 13158||-9223372036854775808|U|G
 13158||10|U|G</Grants>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>31977</IntrospectionStateNumber>
+      <IntrospectionStateNumber>32091</IntrospectionStateNumber>
       <Current>1</Current>
-      <Relations>sequence|table|168564|168566|1
-sequence|table|168577|168579|1
-sequence|table|168585|168587|1
+      <Relations>sequence|table|168688|168690|1
+sequence|table|168701|168703|1
+sequence|table|168709|168711|1
+sequence|table|168722|168724|1
 </Relations>
     </database>
     <database id="5" parent="1" name="tokendatabase">
@@ -886,63 +887,75 @@ sequence|table|168585|168587|1
       <Comment>standard public schema</Comment>
       <StateNumber>287</StateNumber>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>31977</IntrospectionStateNumber>
+      <IntrospectionStateNumber>32091</IntrospectionStateNumber>
       <Current>1</Current>
     </schema>
     <sequence id="21" parent="20" name="offices_id_seq">
-      <ObjectId>168577</ObjectId>
+      <ObjectId>168701</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>31973</StateNumber>
+      <StateNumber>32086</StateNumber>
       <DataType>bigint|0s</DataType>
     </sequence>
     <sequence id="22" parent="20" name="posts_id_seq">
-      <ObjectId>168585</ObjectId>
+      <ObjectId>168709</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>31974</StateNumber>
+      <StateNumber>32087</StateNumber>
       <DataType>bigint|0s</DataType>
     </sequence>
-    <sequence id="23" parent="20" name="users_id_seq">
-      <ObjectId>168564</ObjectId>
+    <sequence id="23" parent="20" name="tokens_id_seq">
+      <ObjectId>168722</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>31972</StateNumber>
+      <StateNumber>32088</StateNumber>
       <DataType>bigint|0s</DataType>
     </sequence>
-    <table id="24" parent="20" name="offices">
-      <ObjectId>168579</ObjectId>
+    <sequence id="24" parent="20" name="users_id_seq">
+      <ObjectId>168688</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>31973</StateNumber>
+      <StateNumber>32085</StateNumber>
+      <DataType>bigint|0s</DataType>
+    </sequence>
+    <table id="25" parent="20" name="offices">
+      <ObjectId>168703</ObjectId>
+      <Owner>postgres</Owner>
+      <StateNumber>32086</StateNumber>
       <AccessMethodId>2</AccessMethodId>
     </table>
-    <table id="25" parent="20" name="posts">
-      <ObjectId>168587</ObjectId>
+    <table id="26" parent="20" name="posts">
+      <ObjectId>168711</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>31974</StateNumber>
+      <StateNumber>32087</StateNumber>
       <AccessMethodId>2</AccessMethodId>
     </table>
-    <table id="26" parent="20" name="users">
-      <ObjectId>168566</ObjectId>
+    <table id="27" parent="20" name="tokens">
+      <ObjectId>168724</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>31974</StateNumber>
+      <StateNumber>32088</StateNumber>
       <AccessMethodId>2</AccessMethodId>
     </table>
-    <column id="27" parent="24" name="id">
+    <table id="28" parent="20" name="users">
+      <ObjectId>168690</ObjectId>
+      <Owner>postgres</Owner>
+      <StateNumber>32087</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+    </table>
+    <column id="29" parent="25" name="id">
       <Position>1</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>31973</StateNumber>
+      <StateNumber>32086</StateNumber>
       <DefaultExpression>nextval(&apos;offices_id_seq&apos;::regclass)</DefaultExpression>
       <TypeId>20</TypeId>
     </column>
-    <column id="28" parent="24" name="name">
+    <column id="30" parent="25" name="name">
       <Position>2</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>31973</StateNumber>
+      <StateNumber>32086</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <index id="29" parent="24" name="offices_pkey">
-      <ObjectId>168583</ObjectId>
-      <StateNumber>31973</StateNumber>
+    <index id="31" parent="25" name="offices_pkey">
+      <ObjectId>168707</ObjectId>
+      <StateNumber>32086</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -950,38 +963,38 @@ sequence|table|168585|168587|1
       <ClassIds>3124</ClassIds>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="30" parent="24" name="offices_pkey">
-      <ObjectId>168584</ObjectId>
-      <StateNumber>31973</StateNumber>
+    <key id="32" parent="25" name="offices_pkey">
+      <ObjectId>168708</ObjectId>
+      <StateNumber>32086</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>offices_pkey</UnderlyingIndexName>
     </key>
-    <column id="31" parent="25" name="id">
+    <column id="33" parent="26" name="id">
       <Position>1</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>31974</StateNumber>
+      <StateNumber>32087</StateNumber>
       <DefaultExpression>nextval(&apos;posts_id_seq&apos;::regclass)</DefaultExpression>
       <TypeId>20</TypeId>
     </column>
-    <column id="32" parent="25" name="name">
+    <column id="34" parent="26" name="name">
       <Position>2</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>31974</StateNumber>
+      <StateNumber>32087</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="33" parent="25" name="userid">
+    <column id="35" parent="26" name="userid">
       <Position>3</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>31974</StateNumber>
+      <StateNumber>32087</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <index id="34" parent="25" name="posts_pkey">
-      <ObjectId>168591</ObjectId>
-      <StateNumber>31974</StateNumber>
+    <index id="36" parent="26" name="posts_pkey">
+      <ObjectId>168715</ObjectId>
+      <StateNumber>32087</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -989,48 +1002,55 @@ sequence|table|168585|168587|1
       <ClassIds>3124</ClassIds>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="35" parent="25" name="posts_pkey">
-      <ObjectId>168592</ObjectId>
-      <StateNumber>31974</StateNumber>
+    <key id="37" parent="26" name="posts_pkey">
+      <ObjectId>168716</ObjectId>
+      <StateNumber>32087</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>posts_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="36" parent="25" name="posts_userid_fkey">
-      <ObjectId>168593</ObjectId>
-      <StateNumber>31974</StateNumber>
+    <foreign-key id="38" parent="26" name="posts_userid_fkey">
+      <ObjectId>168717</ObjectId>
+      <StateNumber>32087</StateNumber>
       <ColNames>userid</ColNames>
-      <RefTableId>168566</RefTableId>
+      <RefTableId>168690</RefTableId>
       <RefColPositions>1</RefColPositions>
       <RefTableName>users</RefTableName>
       <RefKeyName>users_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="37" parent="26" name="id">
+    <column id="39" parent="27" name="id">
       <Position>1</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>31972</StateNumber>
-      <DefaultExpression>nextval(&apos;users_id_seq&apos;::regclass)</DefaultExpression>
+      <StateNumber>32088</StateNumber>
+      <DefaultExpression>nextval(&apos;tokens_id_seq&apos;::regclass)</DefaultExpression>
       <TypeId>20</TypeId>
     </column>
-    <column id="38" parent="26" name="login">
+    <column id="40" parent="27" name="userId">
       <Position>2</Position>
-      <DataType>varchar(255)|0s</DataType>
+      <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>31972</StateNumber>
-      <TypeId>1043</TypeId>
+      <StateNumber>32088</StateNumber>
+      <TypeId>20</TypeId>
     </column>
-    <column id="39" parent="26" name="password">
+    <column id="41" parent="27" name="refreshToken">
       <Position>3</Position>
-      <DataType>varchar(255)|0s</DataType>
+      <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>31972</StateNumber>
-      <TypeId>1043</TypeId>
+      <StateNumber>32088</StateNumber>
+      <TypeId>25</TypeId>
     </column>
-    <index id="40" parent="26" name="users_pkey">
-      <ObjectId>168573</ObjectId>
-      <StateNumber>31972</StateNumber>
+    <column id="42" parent="27" name="expirationDate">
+      <Position>4</Position>
+      <DataType>time|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>32088</StateNumber>
+      <TypeId>1083</TypeId>
+    </column>
+    <index id="43" parent="27" name="tokens_pkey">
+      <ObjectId>168731</ObjectId>
+      <StateNumber>32088</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -1038,9 +1058,48 @@ sequence|table|168585|168587|1
       <ClassIds>3124</ClassIds>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="41" parent="26" name="users_login_key">
-      <ObjectId>168575</ObjectId>
-      <StateNumber>31972</StateNumber>
+    <key id="44" parent="27" name="tokens_pkey">
+      <ObjectId>168732</ObjectId>
+      <StateNumber>32088</StateNumber>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>tokens_pkey</UnderlyingIndexName>
+    </key>
+    <column id="45" parent="28" name="id">
+      <Position>1</Position>
+      <DataType>bigint|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>32085</StateNumber>
+      <DefaultExpression>nextval(&apos;users_id_seq&apos;::regclass)</DefaultExpression>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="46" parent="28" name="login">
+      <Position>2</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>32085</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="47" parent="28" name="password">
+      <Position>3</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>32085</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <index id="48" parent="28" name="users_pkey">
+      <ObjectId>168697</ObjectId>
+      <StateNumber>32085</StateNumber>
+      <ColNames>id</ColNames>
+      <Unique>1</Unique>
+      <Primary>1</Primary>
+      <CollationIds>0</CollationIds>
+      <ClassIds>3124</ClassIds>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="49" parent="28" name="users_login_key">
+      <ObjectId>168699</ObjectId>
+      <StateNumber>32085</StateNumber>
       <ColNames>login</ColNames>
       <Unique>1</Unique>
       <CollationIds>100</CollationIds>
@@ -1048,16 +1107,16 @@ sequence|table|168585|168587|1
       <ClassIds>3126</ClassIds>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="42" parent="26" name="users_pkey">
-      <ObjectId>168574</ObjectId>
-      <StateNumber>31972</StateNumber>
+    <key id="50" parent="28" name="users_pkey">
+      <ObjectId>168698</ObjectId>
+      <StateNumber>32085</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>users_pkey</UnderlyingIndexName>
     </key>
-    <key id="43" parent="26" name="users_login_key">
-      <ObjectId>168576</ObjectId>
-      <StateNumber>31972</StateNumber>
+    <key id="51" parent="28" name="users_login_key">
+      <ObjectId>168700</ObjectId>
+      <StateNumber>32085</StateNumber>
       <ColNames>login</ColNames>
       <UnderlyingIndexName>users_login_key</UnderlyingIndexName>
     </key>

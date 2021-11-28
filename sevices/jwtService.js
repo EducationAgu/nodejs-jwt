@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken')
+const _ =  require("pg/lib/native/query");
+
 const keys = require("../config/jwt.js");
 
 const Tokens = require('../models/token.js');
-const connect = require('../connect/connect.js')
-
+const User = require('../models/authModel.js')
 
 class JwtService {
     constructor() {
@@ -34,9 +35,8 @@ class JwtService {
 
     /**
      * @param candidate User
-     * @returns Tokens
      * */
-    generateAndSaveJwt(candidate) {
+   async generateAndSaveJwt(candidate) {
         const token = jwt.sign(
             {
                 login : candidate.login,
@@ -50,13 +50,32 @@ class JwtService {
         const refToken = this.generateJwtRefresh()
 
         const tokenPair = new Tokens({
-            jwtToken: token,
+            userId: candidate.id,
             refreshToken: refToken,
-            expirationDate: new Date(Date.now()+5*(1000*60)), // 5 минут = 5 * (1000 - милисекунды -> типа одна секунда, 60 - секунд в минуте)
+            expirationDate: new Date(Date.now()+5*(1000*60)).toISOString(), // 5 минут = 5 * (1000 - милисекунды -> типа одна секунда, 60 - секунд в минуте)
         })
 
-        tokenPair.save()
-        return tokenPair
+        await tokenPair.save()
+
+        return {
+            token: token,
+            refreshToken: tokenPair.refreshToken,
+        }
+    }
+
+    async refreshToken(rToken) {
+        const token = await Tokens.findOne({where: {refreshToken: rToken}})
+        const now = new Date(Date.now()).toISOString()
+        if (token) {
+            if (token.expirationDate < now) {
+                const candidate = await User.findOne({where: {id: token.userId}})
+                const newJwt = await this.generateAndSaveJwt(candidate)
+
+                Tokens.destroy({where: {refreshToken: rToken}})
+                return newJwt;
+            }
+        }
+        return 401
     }
 }
 

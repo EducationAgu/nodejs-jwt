@@ -1,13 +1,9 @@
 const bcrypt = require('bcryptjs');
-
-const connect = require('../connect/connect.js')
+const _ =  require("pg/lib/native/query");
 
 const JWTS = require('../sevices/jwtService.js')
 const rsa = require('../sevices/rsaService.js')
-
 const User = require('../models/authModel.js')
-
-const keys = require('../config/jwt.js')
 
 const errorHandler = require('../utils/errorHandler.js')
 
@@ -30,10 +26,11 @@ class authController {
         if (candidate) {
             if (bcrypt.compareSync(req.body.password, candidate.password)) {
                 try {
-                    const tokens = JWTS.generateAndSaveJwt({candidate})
+                    const tokenPairs = JWTS.generateAndSaveJwt({candidate})
+
                     res.status(200).json({
-                        token: tokens.jwtToken,
-                        refreshToken: tokens.refreshToken,
+                        token: tokenPairs.token,
+                        refreshToken: tokenPairs.refreshToken,
                     })
                 } catch (e) {
                     errorHandler(res, e)
@@ -75,10 +72,10 @@ class authController {
             try {
                 await user.save()
                 const candidate = await User.findOne({where: {login: req.body.login}})
-                const tokens = JWTS.generateAndSaveJwt( {candidate})
+                const tokens = await JWTS.generateAndSaveJwt(candidate)
 
                 res.status(201).json({
-                    token: tokens.jwtToken,
+                    token: tokens.token,
                     refreshToken: tokens.refreshToken,
                 })
             }
@@ -93,6 +90,19 @@ class authController {
     * */
     async publicKey(req, res) {
         return res.status(200).json(rsa.getPublicKey());
+    }
+
+    /**
+     * Обновление токена
+     * */
+    async refreshToken(req, res) {
+        const token = req.body.refreshToken
+        try {
+            const newToken = await JWTS.refreshToken(token)
+            res.status(200).json(newToken)
+        } catch (e) {
+            errorHandler(res, e)
+        }
     }
 
 }
