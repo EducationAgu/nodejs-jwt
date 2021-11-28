@@ -82,6 +82,10 @@ class authController {
             }
         }
     }
+
+    async publicKey(req, res) {
+        return res.status(200).json(rsa.getPublicKey());
+    }
 }
 
 module.exports = new authController();
