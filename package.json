@@ -1,0 +1,31 @@
+{
+  "name": "market-service",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node index.js",
+    "server": "nodemon index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "concurrently": "^6.4.0",
+    "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "dotenv": "^10.0.0",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "~1.9.1",
+    "nodemon": "^2.0.14",
+    "passport": "^0.5.0",
+    "passport-jwt": "^4.0.0",
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
+    "pg-model": "^0.0.10",
+    "pg-promise": "^10.11.1",
+    "sequelize": "^6.12.0-alpha.1"
+  }
+}
