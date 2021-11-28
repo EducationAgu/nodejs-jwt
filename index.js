@@ -15,8 +15,11 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan')
 const sequelize = require('./connect/connect.js')
 
+const jwtStrategy = require('./middleware/passport.js')
+
 app.use(passport.initialize());
-require('./middleware/passport.js')(passport);
+passport.use('jwt', jwtStrategy)
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

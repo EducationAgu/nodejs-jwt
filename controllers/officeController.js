@@ -27,6 +27,7 @@ class officeController {
     };
 
     async getOffice(req, res) {
+        console.log('lick ma bals')
         /*const office = await connect.query('select * from offices')
         res.json(office.rows)*/
     };
