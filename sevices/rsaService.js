@@ -29,7 +29,6 @@ class RsaService {
     getPublicKey() {
         return this.publicKey;
     }
-
 }
 module.exports = new RsaService();
 

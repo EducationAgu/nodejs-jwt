@@ -1,7 +1,6 @@
 const sequelize = require('../connect/connect.js')
 const {DataTypes} = require('sequelize')
 
-
 const post = sequelize.define("post", {
 
     id:{

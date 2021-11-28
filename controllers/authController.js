@@ -1,9 +1,13 @@
 const bcrypt = require('bcryptjs');
+
 const connect = require('../connect/connect.js')
-const User = require('../models/authModel.js')
-const jwt = require('jsonwebtoken')
-const keys = require('../config/jwt.js')
+
+const JWTS = require('../sevices/jwtService.js')
 const rsa = require('../sevices/rsaService.js')
+
+const User = require('../models/authModel.js')
+
+const keys = require('../config/jwt.js')
 
 const errorHandler = require('../utils/errorHandler.js')
 
@@ -16,17 +20,24 @@ class authController {
                 message: "Неверный формат данных"
             })
         }
+        try {
+            req.body.password = rsa.decrypt(req.body.password)
+        } catch (e) {
+            errorHandler(res, e)
+        }
 
-        req.body.password = rsa.decrypt(req.body.password)
         const candidate = await User.findOne({where: {login: req.body.login}})
         if (candidate) {
             if (bcrypt.compareSync(req.body.password, candidate.password)) {
-                const token = jwt.sign({
-                    login : candidate.login,
-                    id: candidate.id
-                }, keys.jwt, {expiresIn: 60 * 60})
-
-                res.status(200).json(token)
+                try {
+                    const tokens = JWTS.generateAndSaveJwt({candidate})
+                    res.status(200).json({
+                        token: tokens.jwtToken,
+                        refreshToken: tokens.refreshToken,
+                    })
+                } catch (e) {
+                    errorHandler(res, e)
+                }
             }
             else {
                 res.status(401).json({
@@ -64,17 +75,11 @@ class authController {
             try {
                 await user.save()
                 const candidate = await User.findOne({where: {login: req.body.login}})
-                const token =  jwt.sign(
-                    {
-                        login : candidate.login,
-                        id: candidate.id
-                    },
-                        keys.jwt,
-                    {
-                        expiresIn: 60 * 60
-                    })
+                const tokens = JWTS.generateAndSaveJwt( {candidate})
+
                 res.status(201).json({
-                    token: `${token}`
+                    token: tokens.jwtToken,
+                    refreshToken: tokens.refreshToken,
                 })
             }
             catch(e) {
@@ -83,9 +88,13 @@ class authController {
         }
     }
 
+    /**
+    * Публичный ключ, этим ключём фронт будет шифровать данные
+    * */
     async publicKey(req, res) {
         return res.status(200).json(rsa.getPublicKey());
     }
+
 }
 
 module.exports = new authController();
