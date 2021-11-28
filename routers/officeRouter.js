@@ -3,8 +3,6 @@ const router = new Router()
 const officeController = require('../controllers/officeController.js')
 const passport = require('passport')
 
-
-
 router.post('/', passport.authenticate('jwt', {session: false}), officeController.createOffice)
 router.patch('/:id', passport.authenticate('jwt', {session: false}), officeController.updateOffice)
 
