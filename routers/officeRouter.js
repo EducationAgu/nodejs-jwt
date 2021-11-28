@@ -1,16 +1,14 @@
 const Router = require('express')
 const router = new Router()
 const officeController = require('../controllers/officeController.js')
-const passport = require('passport')
-const authentificate = require('../middleware/passport.js')
+const authenticate = require('../middleware/passport.js')
 
-router.post('/', authentificate, officeController.createOffice)
-router.patch('/:id', passport.authenticate('jwt', {session: false}), officeController.updateOffice)
+router.post('/', authenticate, officeController.createOffice)
+router.patch('/', authenticate, officeController.updateOffice)
 
-router.get('/', authentificate, officeController.getOffice)
-router.get('/:id', passport.authenticate('jwt', {session: false}), officeController.getOneOffice)
+router.get('/all', authenticate, officeController.getOffice)
+router.get('/', authenticate, officeController.getOneOffice)
 
-router.delete('/:id', passport.authenticate('jwt', {session: false}), officeController.deleteOneOffice)
-router.delete('/', passport.authenticate('jwt', {session: false}), officeController.deleteOffice)
+router.delete('/', authenticate, officeController.deleteOffice)
 
 module.exports = router

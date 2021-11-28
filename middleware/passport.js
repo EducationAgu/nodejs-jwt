@@ -2,15 +2,19 @@ const keys = require('../config/jwt.js')
 const jwt = require('jsonwebtoken')
 const User = require('../models/authModel.js')
 
-module.exports = function authentificate (req, res, next) {
+module.exports = async function authentificate (req, res, next) {
     const auth = req.headers['authorization']
-    const token = auth && auth.split(' ')[1]
-    if (token){
-        const tokPayload = jwt.verify(token, keys.jwt)
-        next()
-        return
+    if (auth) {
+        const token = auth && auth.split(' ')[1]
+        if (token){
+            const tokPayload = jwt.verify(token, keys.jwt)
+            const user = await User.findOne({where: {id: tokPayload.id}})
+            req.headers['user'] = user
+            next()
+            return
+        }
     }
-    res.sendStatus(401).json('Ошибка авторизации. Отсутствует токен для авторизации')
+    res.status(401)
 }
 
 function findUser(tokPayload) {
