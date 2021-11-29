@@ -2,9 +2,9 @@ const NodeRSA = require("node-rsa");
 
 class RsaService {
     constructor() {
-        this.key = new NodeRSA({b: 1024});
+        this.key = new NodeRSA({b:1024});
+        this.key.setOptions({encryptionScheme: 'pkcs1'});
         this.publicKey = this.key.exportKey('public');
-
     }
     /**
      * шифрует данные перед отправкой
@@ -23,7 +23,7 @@ class RsaService {
      * @returns {string|Buffer}
      */
     decrypt(data) {
-        return this.key.decrypt(data)
+        return this.key.decrypt(data).toString()
     }
 
     getPublicKey() {

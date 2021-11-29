@@ -20,6 +20,7 @@ class authController {
             req.body.password = rsa.decrypt(req.body.password)
         } catch (e) {
             errorHandler(res, e)
+            return
         }
 
         const candidate = await User.findOne({where: {login: req.body.login}})
@@ -105,6 +106,10 @@ class authController {
         }
     }
 
+
+    async hash(req, res) {
+        res.json({hashedPassword: rsa.encrypt(req.body.password)})
+    }
 }
 
 module.exports = new authController();

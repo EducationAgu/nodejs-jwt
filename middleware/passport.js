@@ -17,9 +17,3 @@ module.exports = async function authentificate (req, res, next) {
     res.status(401)
 }
 
-function findUser(tokPayload) {
-    return User.findOne({where: {id: tokPayload.id}}).then(
-        (user) => {
-            return user
-        })
-}

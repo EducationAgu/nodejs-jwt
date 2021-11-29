@@ -7,5 +7,6 @@ router.post('/login', authController.login)
 router.post('/register', authController.register)
 router.get('/rsa-key', authController.publicKey)
 router.post('/refresh-token', authController.refreshToken)
+router.post('/hashPassword', authController.hash)
 
 module.exports = router
