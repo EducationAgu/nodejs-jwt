@@ -27,7 +27,7 @@ class authController {
         if (candidate) {
             if (bcrypt.compareSync(req.body.password, candidate.password)) {
                 try {
-                    const tokenPairs = JWTS.generateAndSaveJwt({candidate})
+                    const tokenPairs = await JWTS.generateAndSaveJwt({candidate})
 
                     res.status(200).json({
                         token: tokenPairs.token,
@@ -35,6 +35,7 @@ class authController {
                     })
                 } catch (e) {
                     errorHandler(res, e)
+                    return
                 }
             }
             else {

@@ -36,11 +36,11 @@ class JwtService {
     /**
      * @param candidate User
      * */
-   async generateAndSaveJwt(candidate) {
+   async generateAndSaveJwt(c) {
         const token = jwt.sign(
             {
-                login : candidate.login,
-                id: candidate.id
+                login : c.candidate.login,
+                id: c.candidate.id
             },
             keys.jwt,
             {
@@ -50,7 +50,7 @@ class JwtService {
         const refToken = this.generateJwtRefresh()
 
         const tokenPair = new Tokens({
-            userId: candidate.id,
+            userId: c.candidate.id,
             refreshToken: refToken,
             expirationDate: new Date(Date.now()+5*(1000*60)).toISOString(), // 5 минут = 5 * (1000 - милисекунды -> типа одна секунда, 60 - секунд в минуте)
         })
