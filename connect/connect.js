@@ -5,7 +5,7 @@ const sequelize = new Sequelize (
     dbConfig.database, dbConfig.user, dbConfig.password, {
         host: dbConfig.host,
         dialect: dbConfig.dialect,
-        operatorsAliases: false,
+        operatorsAliases: 0,
         define: {
             timestamps: false
         },
