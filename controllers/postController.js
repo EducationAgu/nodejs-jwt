@@ -65,9 +65,9 @@ class postController {
         res.json(post.rows)*/
 
         try {
-            const posts = await Post.findAll({where: {userid: req.user.id}})
+            const posts = await Post.findAll({where: {userid: req.headers['user'].id}})
             res.status(200).json(posts)
-            
+
             
         } catch(e) {
             errorHandler(res, e)
