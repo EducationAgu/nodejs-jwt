@@ -8,6 +8,14 @@ const passport = require('passport')
 const models = require('./models/model.js')
 const routers = require('./routers/router.js')
 
+const https = require(`https`);
+const fs = require(`fs`);
+
+const options = {
+    key: fs.readFileSync(`./certs/service.key`, "utf-8"),
+    cert: fs.readFileSync(`./certs/service.crt`, "utf-8")
+};
+
 const PORT = process.env.PORT || 5000;
 
 const cors = require('cors')
@@ -35,7 +43,9 @@ const start = async  () => {
         await sequelize.authenticate()
         await sequelize.sync()
         console.log('Server started on port ' + PORT)
-        app.listen(PORT)
+        console.log(options.key)
+        console.log(options.cert)
+        https.createServer(options, app).listen(PORT);
     }
     catch(e) {
         console.log(e)
