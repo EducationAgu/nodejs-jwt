@@ -1,6 +1,8 @@
 const connect = require('../connect/connect.js')
 const Post = require('../models/postModel.js')
+const Session = require('../models/session')
 const errorHandler = require('../utils/errorHandler.js')
+const {Op, where} = require("sequelize");
 
 
 class postController {
@@ -60,6 +62,57 @@ class postController {
         }
     };
 
+    async getAllPosts(req, res) {
+        /*const post = await connect.query('select * from posts')
+        res.json(post.rows)*/
+
+        try {
+            if (req.body.search || req.body.search !== "") {
+                const s = await Session.findAll({where: {user_id: req.headers['user'].id}})
+                if (s.length === 0) {
+                    const posts = await Post.findAll({
+                        where: {
+                            name: {
+                                [Op.like]: '%'+req.body.search+'%'
+                            }
+                        }
+                    })
+                    await Session.create({
+                        user_id:  req.headers['user'].id,
+                        amount: 1,
+                        lastReq: Date.now()})
+                    res.status(200).json(posts)
+
+                } else if (parseInt(s[0].amount) > 10) {
+                    const diff = Math.floor((Date.now() - s[0].lastReq.getTime())/1000/60);
+                    if (diff < 60) {
+                        res.status(200).json([])
+                        return
+                    } else {
+                        await Session.update({amount: 0},{where: {user_id: req.headers['user'].id}})
+                    }
+                }
+
+                const posts = await Post.findAll({
+                    where: {
+                        name: {
+                            [Op.like]: '%'+req.body.search+'%'
+                        }
+                    }
+                })
+                const s2 = await Session.findAll({where: {user_id: req.headers['user'].id}})
+                await Session.update({amount: parseInt(s2[0].amount)+1},{where: {user_id: req.headers['user'].id}})
+                res.status(200).json(posts)
+            } else {
+                const posts = await Post.findAll()
+                res.status(200).json(posts)
+            }
+
+        } catch(e) {
+            errorHandler(res, e)
+        }
+    };
+
     async getPost(req, res) {
         /*const post = await connect.query('select * from posts')
         res.json(post.rows)*/
@@ -67,8 +120,6 @@ class postController {
         try {
             const posts = await Post.findAll({where: {userid: req.headers['user'].id}})
             res.status(200).json(posts)
-
-            
         } catch(e) {
             errorHandler(res, e)
         }

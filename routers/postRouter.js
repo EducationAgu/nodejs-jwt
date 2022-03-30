@@ -7,6 +7,7 @@ router.post('/', authenticate, postController.createPost)
 router.patch('/:id', authenticate, postController.updatePost)
 
 router.get('/', authenticate, postController.getPost)
+router.post('/all', authenticate, postController.getAllPosts)
 router.get('/:id', authenticate, postController.getOnePost)
 
 router.delete('/:id', authenticate, postController.deleteOnePost)
