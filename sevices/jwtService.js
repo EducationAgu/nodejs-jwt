@@ -44,7 +44,7 @@ class JwtService {
             },
             keys.jwt,
             {
-                expiresIn: 60*60
+                expiresIn: 60*60*10000
             })
 
         const refToken = this.generateJwtRefresh()
