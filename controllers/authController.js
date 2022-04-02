@@ -72,9 +72,10 @@ class authController {
             });
     
             try {
-                await user.save()
-                const candidate = await User.findOne({where: {login: req.body.login}})
-                const tokens = await JWTS.generateAndSaveJwt(candidate)
+                const userFromDatabase = await user.save()
+
+                const tokens = await JWTS.generateAndSaveJwt(
+                    {candidate: userFromDatabase})
 
                 res.status(201).json({
                     token: tokens.token,
