@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 
 const db = require('./connect/connect.js')
+const User = require('./models/authModel.js')
+const Post = require('./models/postModel.js')
 
 const passport = require('passport')
 
@@ -24,6 +26,9 @@ const morgan = require('morgan')
 const sequelize = require('./connect/connect.js')
 
 const jwtStrategy = require('./middleware/passport.js')
+const bcrypt = require("bcryptjs");
+const JWTS = require("./sevices/jwtService");
+const errorHandler = require("./utils/errorHandler");
 
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy)
@@ -43,12 +48,32 @@ const start = async  () => {
         await sequelize.authenticate()
         await sequelize.sync()
         console.log('Server started on port ' + PORT)
-        console.log(options.key)
-        console.log(options.cert)
         https.createServer(options, app).listen(PORT);
+        await initTestUsersAndPosts()
     }
     catch(e) {
         console.log(e)
+    }
+}
+
+const initTestUsersAndPosts= async () => {
+
+    let user = await User.findOne({where: {login: 'testuser'}})
+    if (!user) {
+        const salt = bcrypt.genSaltSync(10)
+        const password = '123123'
+        user = new User({
+            login: 'testuser',
+            password:bcrypt.hashSync(password, salt)
+        });
+    }
+
+    const posts = await Post.count();
+    if (posts === 0) {
+        await Post.create({name: 'cats', userid: user.id});
+        await Post.create({name: 'dogs', userid: user.id});
+        await Post.create({name: 'cats&dogs', userid: user.id});
+        await Post.create({name: 'neither of them', userid: user.id});
     }
 }
 

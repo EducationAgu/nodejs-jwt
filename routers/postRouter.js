@@ -10,7 +10,6 @@ router.get('/', authenticate, postController.getPost)
 router.post('/all', authenticate, postController.getAllPosts)
 router.get('/:id', authenticate, postController.getOnePost)
 
-router.delete('/:id', authenticate, postController.deleteOnePost)
 router.delete('/', authenticate, postController.deletePost)
 
 module.exports = router

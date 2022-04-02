@@ -38,33 +38,27 @@ class postController {
         }
     };
 
-    async deleteOnePost(req, res) {
-        /*const id = req.params.idPost
-        const post = await connect.query('delete from posts where idPost = $1', [id])
-        res.json(post.rows[0])*/
-        try {
-            await Post.remove({_id: req.params.id}) 
-            res.status(200).json({
-               message: 'Удалено'
-            }) 
-        } catch(e) {
-            errorHandler(res, e)
-        }
-    };
-
-    async deletePost(req, res) {      
-        /*const post = await connect.query('delete from posts')
-        res.json(post.rows)*/
-        try {
-
-        } catch(e) {
-            errorHandler(res, e)
+    async deletePost(req, res) {
+        if (req.body.id) {
+            try {
+                await Post.destroy({where: req.body.id})
+            } catch(e) {
+                errorHandler(res, e)
+            }
         }
     };
 
     async getAllPosts(req, res) {
-        /*const post = await connect.query('select * from posts')
-        res.json(post.rows)*/
+        let skip = 0;
+        let take = 2;
+        if(req.body.page) {
+            if (req.body.page.take) {
+                take = req.body.page.take
+            }
+            if (req.body.page.skip) {
+                skip = req.body.page.skip
+            }
+        }
 
         try {
             if (req.body.search || req.body.search !== "") {
@@ -75,7 +69,9 @@ class postController {
                             name: {
                                 [Op.like]: '%'+req.body.search+'%'
                             }
-                        }
+                        },
+                        limit: take,
+                        offset: skip,
                     })
                     await Session.create({
                         user_id:  req.headers['user'].id,
@@ -97,8 +93,10 @@ class postController {
                     where: {
                         name: {
                             [Op.like]: '%'+req.body.search+'%'
-                        }
-                    }
+                        },
+                    },
+                    limit: take,
+                    offset: skip,
                 })
                 const s2 = await Session.findAll({where: {user_id: req.headers['user'].id}})
                 await Session.update({amount: parseInt(s2[0].amount)+1},{where: {user_id: req.headers['user'].id}})
@@ -115,9 +113,6 @@ class postController {
     };
 
     async getPost(req, res) {
-        /*const post = await connect.query('select * from posts')
-        res.json(post.rows)*/
-
         try {
             const posts = await Post.findAll({where: {userid: req.headers['user'].id}})
             res.status(200).json(posts)
@@ -127,9 +122,6 @@ class postController {
     };
 
     async getOnePost(req, res) {
-        /*const id = req.params.idPost
-        const post = await connect.query('select * from posts where idPost = $1', [id])
-        res.json(post.rows[0])*/
         try {
             const posts = await Post.findOne({where: {id: req.body.id}})
             res.status(200).json(posts)
