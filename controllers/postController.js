@@ -47,10 +47,12 @@ class postController {
             }
         }
     };
-
+    // sortField = [name]
+    // sortAsc = ['ASC', 'DESC']
     async getAllPosts(req, res) {
         let skip = 0;
         let take = 2;
+        let sort = [];
         if(req.body.page) {
             if (req.body.page.take) {
                 take = req.body.page.take
@@ -58,21 +60,52 @@ class postController {
             if (req.body.page.skip) {
                 skip = req.body.page.skip
             }
-        }
 
+            if (req.body.sorting.field) {
+                sort.push(req.body.sorting.field);
+            }
+            if (req.body.sorting.asc && req.body.sorting.asc === 'DESC') {
+                sort.push(req.body.sorting.asc);
+            }
+        }
         try {
             if (req.body.search || req.body.search !== "") {
                 const s = await Session.findAll({where: {user_id: req.headers['user'].id}})
                 if (s.length === 0) {
-                    const posts = await Post.findAll({
-                        where: {
-                            name: {
-                                [Op.like]: '%'+req.body.search+'%'
+                    let posts;
+                    if (sort.length === 1) {
+                        posts = await Post.findAll({
+                            where: {
+                                name: {
+                                    [Op.like]: '%'+req.body.search+'%'
+                                },
+                            },
+                            limit: take,
+                            offset: skip,
+                            order: [sort]})
+                    } else if(sort.length === 2) {
+                        posts = await Post.findAll({
+                            where: {
+                                name: {
+                                    [Op.like]: '%'+req.body.search+'%'
+                                },
+                            },
+                            limit: take,
+                            offset: skip,
+                            order: [[sort[0], sort[1]]]})
+                    } else {
+                        posts = await Post.findAll({
+                                where: {
+                                    name: {
+                                        [Op.like]: '%'+req.body.search+'%'
+                                    },
+                                },
+                                limit: take,
+                                offset: skip,
                             }
-                        },
-                        limit: take,
-                        offset: skip,
-                    })
+                        )
+                    }
+
                     await Session.create({
                         user_id:  req.headers['user'].id,
                         amount: 1,
@@ -88,21 +121,58 @@ class postController {
                         await Session.update({amount: 0},{where: {user_id: req.headers['user'].id}})
                     }
                 }
+                let query = {}
+                if (sort.length === 2 ) {
+                    query.order = sort;
+                }
 
-                const posts = await Post.findAll({
-                    where: {
-                        name: {
-                            [Op.like]: '%'+req.body.search+'%'
+                let posts;
+                if (sort.length === 1) {
+                    posts = await Post.findAll({
+                        where: {
+                            name: {
+                                [Op.like]: '%'+req.body.search+'%'
+                            },
                         },
-                    },
-                    limit: take,
-                    offset: skip,
-                })
+                        limit: take,
+                        offset: skip,
+                        order: [sort]})
+                } else if(sort.length === 2) {
+                    posts = await Post.findAll({
+                        where: {
+                            name: {
+                                [Op.like]: '%'+req.body.search+'%'
+                            },
+                        },
+                        limit: take,
+                        offset: skip,
+                        order: [[sort[0], sort[1]]]})
+                } else {
+                    posts = await Post.findAll({
+                        where: {
+                            name: {
+                                [Op.like]: '%'+req.body.search+'%'
+                            },
+                        },
+                        limit: take,
+                        offset: skip}
+                    )
+                }
+
+
                 const s2 = await Session.findAll({where: {user_id: req.headers['user'].id}})
                 await Session.update({amount: parseInt(s2[0].amount)+1},{where: {user_id: req.headers['user'].id}})
                 res.status(200).json(posts)
             } else {
-                const posts = await Post.findAll()
+                let posts;
+                if (sort.length === 1) {
+                    posts = await Post.findAll({order: [sort]})
+                } else if(sort.length === 2) {
+
+                    posts = await Post.findAll({order: [[sort[0], sort[1]]]})
+                } else {
+                    posts = await Post.findAll()
+                }
                 res.status(200).json(posts)
                 return
             }
