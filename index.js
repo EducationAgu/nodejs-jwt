@@ -62,10 +62,10 @@ const initTestUsersAndPosts= async () => {
     if (!user) {
         const salt = bcrypt.genSaltSync(10)
         const password = '123123'
-        user = new User({
+        user = await User.create({
             login: 'testuser',
             password:bcrypt.hashSync(password, salt)
-        });
+        })
     }
 
     const posts = await Post.count();
