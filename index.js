@@ -68,7 +68,7 @@ const initTestUsersAndPosts= async () => {
         })
     }
 
-    const posts = await Post.count();
+    const posts = await Post.count({where: {userid: user.id}});
     if (posts === 0) {
         await Post.create({name: 'cats', userid: user.id});
         await Post.create({name: 'dogs', userid: user.id});
