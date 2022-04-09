@@ -47,140 +47,70 @@ class postController {
             }
         }
     };
-    // sortField = [name]
-    // sortAsc = ['ASC', 'DESC']
+
     async getAllPosts(req, res) {
-        let skip = 0;
-        let take = 2;
-        let sort = [];
-        if(req.body.page) {
-            if (req.body.page.take) {
-                take = req.body.page.take
-            }
-            if (req.body.page.skip) {
-                skip = req.body.page.skip
-            }
 
-            if (req.body.sorting.field) {
-                sort.push(req.body.sorting.field);
+        let dbRequest = {
+            limit: 10,
+            offset: 0,
+        };
+
+        if(req.body.request.paging) {
+            if (req.body.request.paging.take) {
+                dbRequest.limit = req.body.request.paging.take;
             }
-            if (req.body.sorting.asc && req.body.sorting.asc === 'DESC') {
-                sort.push(req.body.sorting.asc);
+            if (req.body.request.paging.skip) {
+                dbRequest.offset = req.body.request.paging.skip;
             }
         }
-        try {
-            if (req.body.search || req.body.search !== "") {
-                const s = await Session.findAll({where: {user_id: req.headers['user'].id}})
-                if (s.length === 0) {
-                    let posts;
-                    if (sort.length === 1) {
-                        posts = await Post.findAll({
-                            where: {
-                                name: {
-                                    [Op.like]: '%'+req.body.search+'%'
-                                },
-                            },
-                            limit: take,
-                            offset: skip,
-                            order: [sort]})
-                    } else if(sort.length === 2) {
-                        posts = await Post.findAll({
-                            where: {
-                                name: {
-                                    [Op.like]: '%'+req.body.search+'%'
-                                },
-                            },
-                            limit: take,
-                            offset: skip,
-                            order: [[sort[0], sort[1]]]})
-                    } else {
-                        posts = await Post.findAll({
-                                where: {
-                                    name: {
-                                        [Op.like]: '%'+req.body.search+'%'
-                                    },
-                                },
-                                limit: take,
-                                offset: skip,
-                            }
-                        )
-                    }
 
-                    await Session.create({
-                        user_id:  req.headers['user'].id,
-                        amount: 1,
-                        lastReq: Date.now()})
-                    res.status(200).json(posts)
+        if (req.body.request.sort) {
+            dbRequest.order = []
 
-                } else if (parseInt(s[0].amount) > 10) {
-                    const diff = Math.floor((Date.now() - s[0].lastReq.getTime())/1000/60);
-                    if (diff < 60) {
-                        res.status(200).json([])
-                        return
-                    } else {
-                        await Session.update({amount: 0},{where: {user_id: req.headers['user'].id}})
-                    }
+            if (req.body.request.sort.field) {
+                dbRequest.order.push(req.body.request.sort.field);
+                if (req.body.request.sort.asc && req.body.request.sort.asc === 'DESC') {
+                    dbRequest.order.push(req.body.request.sort.asc);
                 }
-                let query = {}
-                if (sort.length === 2 ) {
-                    query.order = sort;
-                }
-
-                let posts;
-                if (sort.length === 1) {
-                    posts = await Post.findAll({
-                        where: {
-                            name: {
-                                [Op.like]: '%'+req.body.search+'%'
-                            },
-                        },
-                        limit: take,
-                        offset: skip,
-                        order: [sort]})
-                } else if(sort.length === 2) {
-                    posts = await Post.findAll({
-                        where: {
-                            name: {
-                                [Op.like]: '%'+req.body.search+'%'
-                            },
-                        },
-                        limit: take,
-                        offset: skip,
-                        order: [[sort[0], sort[1]]]})
-                } else {
-                    posts = await Post.findAll({
-                        where: {
-                            name: {
-                                [Op.like]: '%'+req.body.search+'%'
-                            },
-                        },
-                        limit: take,
-                        offset: skip}
-                    )
-                }
-
-
-                const s2 = await Session.findAll({where: {user_id: req.headers['user'].id}})
-                await Session.update({amount: parseInt(s2[0].amount)+1},{where: {user_id: req.headers['user'].id}})
-                res.status(200).json(posts)
-            } else {
-                let posts;
-                if (sort.length === 1) {
-                    posts = await Post.findAll({order: [sort]})
-                } else if(sort.length === 2) {
-
-                    posts = await Post.findAll({order: [[sort[0], sort[1]]]})
-                } else {
-                    posts = await Post.findAll()
-                }
-                res.status(200).json(posts)
-                return
             }
-
-        } catch(e) {
-            errorHandler(res, e)
         }
-    };
+        if (req.body.request.filter && req.body.request.filter !== "") {
+            dbRequest.where = {
+                name: {
+                    [Op.like]: '%'+req.body.request.filter+'%'
+                },
+            };
+        }
+        const s = await Session.findAll({where: {user_id: req.headers['user'].id}})
+
+        if (s.length === 0) {
+            await Session.create({
+                user_id:  req.headers['user'].id,
+                amount: 1,
+                lastReq: Date.now()})
+        } else {
+            if (parseInt(s[0].amount) > 10) {
+                const diff = Math.floor((Date.now() - s[0].lastReq.getTime())/1000/60);
+                if (diff < 60) {
+                    res.status(200).json([])
+                    return;
+                } else {
+                    await Session.update({amount: 0},{where: {user_id: req.headers['user'].id}});
+
+                }
+            }
+            await Session.update({amount: parseInt(s[0].amount) + 1},{where: {user_id: req.headers['user'].id}});
+        }
+
+        const posts = await Post.findAll(dbRequest);
+
+        delete dbRequest.offset
+        delete dbRequest.limit
+        // dbRequest.attributes = [[sequelize.fn('COUNT', sequelize.col('*')), 'n_hats']]
+        const allAmount =  await Post.count(dbRequest)
+        res.status(200).json({posts:posts, allAmount: allAmount/10});
+}
+
 
     async getPost(req, res) {
         try {
@@ -195,11 +125,8 @@ class postController {
         try {
             const posts = await Post.findOne({where: {id: req.body.id}})
             res.status(200).json(posts)
-            
-            
         } catch(e) {
             errorHandler(res, e)
-            
         }
     };
 
