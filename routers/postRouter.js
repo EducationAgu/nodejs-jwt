@@ -13,4 +13,6 @@ router.get('/:id', authenticate, postController.getOnePost)
 
 router.delete('/', authenticate, postController.deletePost)
 
+router.post('/addToFav', authenticate, postController.addToFavorite)
+router.post('/deleteFromFav', authenticate, postController.deleteFromFavorite)
 module.exports = router

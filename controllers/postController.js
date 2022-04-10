@@ -1,5 +1,6 @@
 const connect = require('../connect/connect.js')
 const Post = require('../models/postModel.js')
+const Favorite = require('../models/favorite.js')
 const Session = require('../models/session')
 const errorHandler = require('../utils/errorHandler.js')
 const {Op, where} = require("sequelize");
@@ -102,13 +103,43 @@ class postController {
             await Session.update({amount: parseInt(s[0].amount) + 1},{where: {user_id: req.headers['user'].id}});
         }
 
-        const posts = await Post.findAll(dbRequest);
 
-        delete dbRequest.offset
-        delete dbRequest.limit
-        // dbRequest.attributes = [[sequelize.fn('COUNT', sequelize.col('*')), 'n_hats']]
-        const allAmount =  await Post.count(dbRequest)
-        res.status(200).json({posts:posts, allAmount: allAmount/10});
+        try {
+            let posts = await Post.findAll(dbRequest);
+
+            delete dbRequest.offset
+            delete dbRequest.limit
+            const allAmount =  await Post.count(dbRequest)
+
+            let postsId = []
+            for (let p in posts) {
+                postsId.push(posts[p].dataValues.id)
+            }
+            const favorites = await Favorite.findAll(
+                {
+                    where:{
+                        [Op.and]: [{
+                            postid:
+                                {
+                                    [Op.in]: postsId
+                                },
+                            userid: req.headers['user'].id,
+                        }]
+                    }
+                }
+            )
+            for (let f in favorites) {
+                for(let p in posts) {
+                    if (posts[p].dataValues.id === favorites[f].dataValues.postid) {
+                        posts[p].dataValues.isFav = true;
+                        break
+                    }
+                }
+            }
+            res.status(200).json({posts:posts, allAmount: allAmount/10});
+        } catch(e) {
+            errorHandler(e)
+        }
 }
 
 
@@ -130,7 +161,21 @@ class postController {
         }
     };
 
+    async addToFavorite(req, res) {
+        await Favorite.create({
+            userid: req.headers['user'].id,
+            postid: req.body.id,
+        })
+    };
 
+    async deleteFromFavorite(req, res) {
+        await Favorite.destroy({
+            where: {
+                userid: req.headers['user'].id,
+                postid: req.body.id,
+            }
+        })
+    };
 }
 
 module.exports = new postController()

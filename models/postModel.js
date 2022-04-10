@@ -1,5 +1,6 @@
 const sequelize = require('../connect/connect.js')
 const {DataTypes} = require('sequelize')
+const User = require('./authModel')
 
 const post = sequelize.define("post", {
 
@@ -13,17 +14,14 @@ const post = sequelize.define("post", {
     name:{
         type:DataTypes.STRING,
         allowNull: false
-        
     },
 
     userid: {
         type:DataTypes.BIGINT,
         allowNull: false,
         references: { model: 'users', key: 'id' }
-        
     }
 });
-
 
 module.exports = post;
 

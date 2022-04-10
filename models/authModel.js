@@ -1,6 +1,6 @@
 const sequelize = require('../connect/connect.js')
 const {DataTypes} = require('sequelize')
-
+const Post = require('./postModel')
 
 const user = sequelize.define("user", {
 
@@ -23,6 +23,4 @@ const user = sequelize.define("user", {
     }
     
 });
-
-
 module.exports = user;
