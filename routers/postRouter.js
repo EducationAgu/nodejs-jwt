@@ -3,8 +3,9 @@ const router = new Router()
 const postController = require('../controllers/postController.js')
 const authenticate = require('../middleware/passport.js')
 
-router.post('/', authenticate, postController.createPost)
-router.patch('/:id', authenticate, postController.updatePost)
+router.post('/add',  authenticate, postController.createPost)
+router.patch('/add',  authenticate, postController.updatePost)
+
 
 router.get('/', authenticate, postController.getPost)
 router.post('/all', authenticate, postController.getAllPosts)
