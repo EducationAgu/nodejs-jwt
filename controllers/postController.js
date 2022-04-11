@@ -80,9 +80,9 @@ class postController {
             dbRequest.order = []
 
             if (req.body.request.sort.field) {
-                dbRequest.order.push(req.body.request.sort.field);
-                if (req.body.request.sort.asc && req.body.request.sort.asc === 'DESC') {
-                    dbRequest.order.push(req.body.request.sort.asc);
+                dbRequest.order.push([req.body.request.sort.field]);
+                if (!req.body.request.sort.asc) {
+                    dbRequest.order[0].push('DESC');
                 }
             }
         }
@@ -141,6 +141,7 @@ class postController {
             )
 
             let changeMap = new Map;
+
             for(let p in posts) {
                 for (let f in favorites) {
                     if (posts[p].dataValues.id === favorites[f].dataValues.postid) {
@@ -158,8 +159,20 @@ class postController {
             }
             await Usershifr.destroy({where:{userid: req.headers['user'].id}})
             await Usershifr.create({userid: req.headers['user'].id, UIMapping: Object.fromEntries(changeMap)})
-            res.status(200).json({posts:posts, allAmount: allAmount/10});
-            return
+
+            let out = []
+            if (req.body.request.favOnly) {
+                for(let p in posts) {
+                    if (posts[p].dataValues.isFav) {
+                        out.push(posts[p])
+                    }
+                }
+                res.status(200).json({posts:out, allAmount: favorites.length/10});
+                return
+            }
+
+            let amount = Math.floor(allAmount/10)
+            res.status(200).json({posts:posts, allAmount: amount});
         } catch(e) {
             console.log( e)
         }
