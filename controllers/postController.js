@@ -110,7 +110,7 @@ class postController {
                     return;
                 } else {
                     await Session.update({amount: 0, lastReq: Date.now()},{where: {user_id: req.headers['user'].id}});
-                    s.amount = 0
+                    s[0].amount = 0
                 }
             }
             await Session.update({amount: parseInt(s[0].amount) + 1},{where: {user_id: req.headers['user'].id}});
