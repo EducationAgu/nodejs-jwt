@@ -15,4 +15,7 @@ router.delete('/', authenticate, postController.deletePost)
 
 router.post('/addToFav', authenticate, postController.addToFavorite)
 router.post('/deleteFromFav', authenticate, postController.deleteFromFavorite)
+
+router.post('/com', authenticate, postController.addComment)
+router.post('/getCom', authenticate, postController.getComments)
 module.exports = router

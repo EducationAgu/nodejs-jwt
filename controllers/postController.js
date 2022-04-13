@@ -1,8 +1,10 @@
 const connect = require('../connect/connect.js')
 const Post = require('../models/postModel.js')
+const User = require('../models/authModel')
 const Favorite = require('../models/favorite.js')
 const Session = require('../models/session')
 const Usershifr = require('../models/userShifr')
+const Comment = require('../models/coment')
 const errorHandler = require('../utils/errorHandler.js')
 const {Op, where} = require("sequelize");
 
@@ -93,7 +95,7 @@ class postController {
                 },
             };
         }
-        const s = await Session.findAll({where: {user_id: req.headers['user'].id}})
+        let s = await Session.findAll({where: {user_id: req.headers['user'].id}})
 
         if (s.length === 0) {
             await Session.create({
@@ -102,13 +104,13 @@ class postController {
                 lastReq: Date.now()})
         } else {
             if (parseInt(s[0].amount) > 10) {
-                const diff = Math.floor((Date.now() - s[0].lastReq.getTime())/1000/60);
+                const diff = Math.floor((Date.now() - s[0].lastReq.getTime()))/1000;
                 if (diff < 60) {
                     res.status(200).json([])
                     return;
                 } else {
-                    await Session.update({amount: 0},{where: {user_id: req.headers['user'].id}});
-
+                    await Session.update({amount: 0, lastReq: Date.now()},{where: {user_id: req.headers['user'].id}});
+                    s.amount = 0
                 }
             }
             await Session.update({amount: parseInt(s[0].amount) + 1},{where: {user_id: req.headers['user'].id}});
@@ -176,8 +178,50 @@ class postController {
         } catch(e) {
             console.log( e)
         }
-}
+};
 
+    async addComment(req, res) {
+        if (req.body.comment) {
+            let out = req.body.comment.replace(
+                /[\u0000-\u002F\u003A-\u0040\u005B-\u0060\u007B-\u00FF]/g,
+                c => '&#' + ('000' + c.charCodeAt(0)).slice(-4) + ';'
+            )
+            try {
+                await Comment.create({user_id: req.headers['user'].id, content: out})
+            } catch (e) {
+                console.log(e)
+            }
+
+            res.status(200)
+        }
+    }
+
+    async getComments(req, res) {
+        const comm = await Comment.findAll();
+        let usersId = []
+        for(let u in comm) {
+            usersId.push(comm[u].user_id)
+        }
+
+        const users = await User.findAll({where: {id:{
+                    [Op.in]: usersId
+                },}})
+        let out = []
+        for(let c in comm) {
+            for(let u in users) {
+                if (users[u].id === comm[c].user_id) {
+                    out.push(
+                        {
+                            user: users[u].login,
+                            content: comm[c].content
+                        })
+                    break
+                }
+
+            }
+        }
+        res.status(200).json({Items: out});
+    };
 
     async getPost(req, res) {
         try {
@@ -201,11 +245,15 @@ class postController {
         const postToUser = await Usershifr.findAll({where: {userid: req.headers['user'].id}})
 
         req.body.id = postToUser[0].UIMapping[req.body.id]
-
-        await Favorite.create({
-            userid: req.headers['user'].id,
-            postid: req.body.id,
-        })
+        try {
+            await Favorite.create({
+                userid: req.headers['user'].id,
+                postid: req.body.id,
+            })
+        } catch (e) {
+                console.log(e)
+        }
+        res.status(200)
     };
 
     async deleteFromFavorite(req, res) {
@@ -214,13 +262,17 @@ class postController {
 
         req.body.id = postToUser[0].UIMapping[req.body.id]
 
-
+        try {
         await Favorite.destroy({
             where: {
                 userid: req.headers['user'].id,
                 postid: req.body.id,
             }
         })
+        } catch (e) {
+            console.log(e)
+        }
+        res.status(200)
     };
 }
 
