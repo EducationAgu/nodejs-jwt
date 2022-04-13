@@ -242,37 +242,43 @@ class postController {
     };
 
     async addToFavorite(req, res) {
-        const postToUser = await Usershifr.findAll({where: {userid: req.headers['user'].id}})
+            try {
+                const postToUser = await Usershifr.findAll({where: {userid: req.headers['user'].id}})
 
-        req.body.id = postToUser[0].UIMapping[req.body.id]
-        try {
-            await Favorite.create({
-                userid: req.headers['user'].id,
-                postid: req.body.id,
-            })
-        } catch (e) {
+                if (postToUser.length > 0){
+                    req.body.id = postToUser[0].UIMapping[req.body.id]
+
+                    await Favorite.create({
+                        userid: req.headers['user'].id,
+                        postid: req.body.id,
+                    })
+                }
+            } catch (e) {
                 console.log(e)
-        }
+            }
+
         res.status(200)
+        return
     };
 
     async deleteFromFavorite(req, res) {
+            try {
+                const postToUser = await Usershifr.findAll({where: {userid: req.headers['user'].id}})
+                if (postToUser.length > 0) {
 
-        const postToUser = await Usershifr.findAll({where: {userid: req.headers['user'].id}})
-
-        req.body.id = postToUser[0].UIMapping[req.body.id]
-
-        try {
-        await Favorite.destroy({
-            where: {
-                userid: req.headers['user'].id,
-                postid: req.body.id,
-            }
-        })
-        } catch (e) {
-            console.log(e)
+                    req.body.id = postToUser[0].UIMapping[req.body.id]
+                    await Favorite.destroy({
+                        where: {
+                            userid: req.headers['user'].id,
+                            postid: req.body.id,
+                        }
+                    })
+                }
+            } catch (e) {
+                console.log(e)
         }
         res.status(200)
+        return
     };
 }
 
